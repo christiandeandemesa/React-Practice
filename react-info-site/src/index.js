@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Renders the App component to the HTML document.
 ReactDOM.render(
   <React.StrictMode>
     <App />

@@ -1,11 +1,14 @@
 import React from "react";
+// Imports a picture.
 import profile from "../images/Selfie 6-14.jpg";
 import styles from "../styles/Main.module.scss";
 
 function Main() {
     return (
+        // All things returned in a component must be within one parent tag.
         <div id={styles.body}>
             <div id={styles.body_left}>
+                {/* Notice profile calls on the picture that was imported */}
                 <img src={profile} alt="Profile Picture" className={styles.profile_icon}/>
             </div>
             <div id={styles.body_right}>
