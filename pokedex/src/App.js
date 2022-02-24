@@ -1,13 +1,15 @@
 // Imports useState from the react library.
-import { useState } from "react";
+import { useState } from 'react';
+// Imports PokeInfo component.
+import PokemonInfo from './components/PokemonInfo';
 // Imports the sass stylesheet.
-import "./App.scss";
+import './App.scss';
 // Imports axios from the axios library.
-import axios from "axios";
+import axios from 'axios';
 
 function App() {
-	// Creates two states: pokemon to hold the name from the input, and pokemonData to hold the api data for that specific pokemon.
-	const [pokemon, setPokemon] = useState('');
+	// Creates two states: pokemonName to hold the name from the input, and pokemonData to hold the api data for that specific pokemon.
+	const [pokemonName, setPokemonName] = useState('');
 	const [pokemonData, setPokemonData] = useState([]);
 
 	function handleChange(e) {
@@ -15,11 +17,11 @@ function App() {
 		e stands for event.
 		e.target will return the html element that triggered the event (e.g. <input...>).
 		e.target.value is the pokemon state (e.g. <input value={pokemon}>).
-		.toLowerCase() sets the string in pokemon state to all lowercase letters because the pokemon names in the API call are all 
-		lowercase.
-		setPokemon() takes whatever is in the parentheses and makes it the value of the pokemon state.
+		.toLowerCase() sets each individual character in the input to be lowercase because the API call needs the pokemon state to have the 
+		value be lowercase.
+		setPokemonName() takes whatever is in the parentheses and makes it the value of the pokemon state.
 		*/
-		setPokemon(e.target.value.toLowerCase());
+		setPokemonName(e.target.value.toLowerCase());
 	}
 
 	function handleSubmit(e) {
@@ -34,7 +36,7 @@ function App() {
 		const apiData = [];
 		try {
 			// This is the API call using string interpolation to grab the value in pokemon state (${pokemon}) to get different pokemon.
-			const url = `https://pokeapi.co/api/v2/pokemon/${pokemon}`;
+			const url = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
 			/*
 			The await keyword blocks the rest of the code from running until the following function (axios.get()) returns a promise.
 			axios.get() performs a GET request on the given url.
@@ -55,6 +57,23 @@ function App() {
 		}
 	}
 
+	/* Creates a variable (pokemonElement) that maps over every object (pokemon) in the array in the pokemonData state.
+	   Renders the PokemonInfo component that passes props (e.g. sprite is the image of the pokemon from the API). */
+	const pokemonElement = pokemonData.map(pokemon => <PokemonInfo 
+		// Each sibling component needs to have a unique key from each other.
+		key={pokemon.id}
+		sprite={pokemon.sprites.front_default}
+		type1={pokemon.types[0].type.name}
+		// If pokemon.types[1] exists in the API, pass its data. If it doesn't exist pass 'None' through props.
+		type2={pokemon.types[1] !== undefined ? pokemon.types[1].type.name: 'None'}
+		ability1={pokemon.abilities[0].ability.name}
+		ability2={pokemon.types[0] !== undefined ? pokemon.abilities[1].ability.name: 'None'}
+		move1={pokemon.moves[0].move.name}
+		move2={pokemon.moves[1].move.name}
+		move3={pokemon.moves[2].move.name}
+		move4={pokemon.moves[3].move.name}
+	/>);
+
 	return (
 		<div>
 			{/* When this form is submitted, it runs the handleSubmit function. */}
@@ -62,62 +81,21 @@ function App() {
 				<input
 					// Defines the input as a single-line text field.
 					type='text'
-					name='pokemon'
+					name='pokemonName'
 					// Whenever the text in the input changes, it runs the handleChange function.
 					onChange={handleChange}
 					// Shows the string in the input if it is empty.
 					placeholder='Pokemon Name'
 					// Value is the pokemon state.
-					value={pokemon}
+					value={pokemonName}
 				/>
 				{/* <button></button> acts like <input type='submit> in React. */}
 				<button>Search for Pokemon</button>
 			</form>
-
-			{/* Maps over the one element in the pokemonData state to create . */}
-			{pokemonData.map(data => {
-				console.log(data);
-				return (
-					// Gives each child a unique key, and individual pokemon id's are used.
-					<div key={data.id}>
-						{/* Displays the pokemon's front sprite as the image. */}
-						<img src={data.sprites.front_default} />
-						<div>
-							<div>
-								<div>
-									<div>Type 1</div>
-									{/* Displays the pokemon's first ability. */}
-									<div>{data.types[0].type.name}</div>
-									<div>Type 2</div>
-									{/* Displays the pokemon's second ability if it has one, and 'None' if it does not. */}
-									<div>{data.types[1] !== undefined ? data.types[1].type.name : 'None'}</div>
-								</div>
-								<div>
-									<div>Ability 1</div>
-									{/* Displays the pokemon's ability/abilities. */}
-									<div>{data.abilities[0].ability.name}</div>
-									<div>Ability 2</div>
-									<div>{data.types[0] !== undefined ? data.abilities[1].ability.name: 'None'}</div>
-								</div>
-								<div>
-									<div>Sample Moveset</div>
-									<div>
-										<div>
-											{/* Displays the pokemon's first four moves. */}
-											<div>{data.moves[0].move.name}</div>
-											<div>{data.moves[1].move.name}</div>
-											<div>{data.moves[2].move.name}</div>
-											<div>{data.moves[3].move.name}</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				);
-			})}
+			{pokemonElement}
 		</div>
 	);
 };
 
+// Exports this component, so it can be imported elsewhere.
 export default App;
